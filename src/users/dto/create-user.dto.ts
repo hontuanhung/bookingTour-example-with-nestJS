@@ -7,7 +7,7 @@ import {
   Length,
   MinLength,
 } from 'class-validator';
-import { Match } from 'src/ultils/dto.customs/match.dto';
+import { Match } from 'src/ultils/dto_customs/match.dto';
 
 enum USER_ROLE {
   USER = 'user',
@@ -22,7 +22,7 @@ export class CreateUserDto {
   @Length(5, 40, {
     message: "The 'name' must be between 5-50 characters long",
   })
-  name: string | undefined;
+  name!: string;
 
   @IsNotEmpty()
   @IsString()
