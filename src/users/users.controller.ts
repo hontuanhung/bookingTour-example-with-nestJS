@@ -17,7 +17,8 @@ export class UsersController {
 
   @Post('signup')
   create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    // return this.usersService.create(createUserDto);
+    return createUserDto;
   }
 
   @Get()
