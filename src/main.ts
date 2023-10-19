@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import dotenv from 'configEnv';
 import { ValidationPipe } from '@nestjs/common';
 import { connection } from 'mongoose';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {

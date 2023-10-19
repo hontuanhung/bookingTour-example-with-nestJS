@@ -1,22 +1,30 @@
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { Response, Request } from 'express';
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Model } from 'mongoose';
 import { IUser } from '../users/model/user.interface';
 import { LoginDto } from './dto/login.dto';
-import { signToken } from 'src/ultils/jwt';
 import configEnv from 'configEnv';
 import Email from 'src/ultils/email';
 import crypto from 'crypto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { JwtService } from '@nestjs/jwt';
+import { UpdateMeDto } from './dto/update-me.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject('USER_MODEL')
     private userModel: Model<IUser>,
+    private jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -29,6 +37,7 @@ export class AuthService {
     const user: any = await this.userModel
       .findOne({ email: email })
       .select('+password +userJWTs');
+
     if (!user || !(await user.correctPassword(password, user.password))) {
       throw new HttpException(
         'Incorrect email or password',
@@ -36,7 +45,7 @@ export class AuthService {
       );
     }
 
-    const token: string = signToken(user._id);
+    const token: string = this.jwtService.sign({ id: user._id });
     user.userJWTs.push(token);
     await user.save();
 
@@ -127,10 +136,10 @@ export class AuthService {
     return { status: 'success' };
   }
 
-  async changePassword(changePasswordDto: ChangePasswordDto) {
+  async changePassword(payload: any, changePasswordDto: ChangePasswordDto) {
     // 1) Check if POSTed current password is correct
     const user: any = await this.userModel
-      .findById('userid')
+      .findById(payload.id)
       .select('+password');
     if (
       !(await user.correctPassword(
@@ -146,7 +155,6 @@ export class AuthService {
 
     // 2) If so, update password
     user.password = changePasswordDto.password;
-    user.passwordConfirm = changePasswordDto.passwordConfirm;
     user.passwordChangedAt = Date.now();
 
     await user.save();
@@ -154,5 +162,40 @@ export class AuthService {
     return {
       status: 'success',
     };
+  }
+
+  async updateMe(payload: any, updateMeDto: UpdateMeDto) {
+    const user: any = await this.userModel.findByIdAndUpdate(
+      payload.id,
+      updateMeDto,
+      { new: true },
+    );
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return { status: 'sucess', user };
+  }
+
+  async getMe(payload: any) {
+    const user: any = await this.userModel
+      .findById(payload.id)
+      .select('-_id -__v -paswordChangedAt');
+
+    if (!user) {
+      throw new HttpException(
+        'No user found with that ID',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return { status: 'success', user };
+  }
+
+  async deactivateUser(payload: any) {
+    await this.userModel.findByIdAndUpdate(payload.id, {
+      active: false,
+    });
+    return { status: 'success' };
   }
 }
