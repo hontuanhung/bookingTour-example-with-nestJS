@@ -7,7 +7,7 @@ import {
   Length,
   MinLength,
 } from 'class-validator';
-import { Match } from 'src/ultils/dto_customs/match.dto';
+import { Match } from 'src/ultils/validator_dto_custom/match.dto';
 
 enum USER_ROLE {
   USER = 'user',
@@ -16,6 +16,7 @@ enum USER_ROLE {
   LEAD_GUIDE = 'lead-guide',
 }
 
+// TODO tạo whitelist cho Dto
 export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
@@ -27,7 +28,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   @IsEmail()
-  email: string | undefined;
+  readonly email: string | undefined;
 
   @IsNotEmpty()
   @IsString()

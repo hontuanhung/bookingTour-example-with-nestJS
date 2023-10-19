@@ -1,6 +1,6 @@
 import { model } from 'mongoose';
-import { UserSchema } from './model/user.schema';
 import { IUser } from './model/user.interface';
+import { UserSchema } from './model/user.schema';
 
 export const usersProviders = [
   {

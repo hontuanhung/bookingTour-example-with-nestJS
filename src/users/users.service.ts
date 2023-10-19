@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from './model/user.interface';
 
@@ -11,11 +10,6 @@ export class UsersService {
     @Inject('USER_MODEL')
     private userModel: Model<IUser>,
   ) {}
-
-  async create(createUserDto: CreateUserDto) {
-    const newUser = new this.userModel(createUserDto);
-    return await newUser.save();
-  }
 
   findAll() {
     return `This action returns all users`;
