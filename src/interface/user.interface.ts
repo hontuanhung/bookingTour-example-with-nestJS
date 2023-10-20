@@ -13,4 +13,8 @@ export interface IUser extends Document {
   emailTokenExpires: number;
   inactiveAccount: boolean;
   active: boolean;
+  correctPassword(
+    candidatePassword: string | undefined,
+    userPasswrod: string,
+  ): Promise<boolean>;
 }

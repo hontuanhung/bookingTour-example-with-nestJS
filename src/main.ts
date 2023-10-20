@@ -1,9 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import dotenv from 'configEnv';
+import { configEnv } from 'src/configs/config_env/config-env';
 import { ValidationPipe } from '@nestjs/common';
 import { connection } from 'mongoose';
 import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,13 +15,16 @@ async function bootstrap() {
   // Cookies
   app.use(cookieParser());
 
+  // Send info every time req-res success
+  app.use(morgan('dev'));
+
   // Listning server
-  await app.listen(dotenv.PORT, () => {
+  await app.listen(configEnv.PORT, () => {
     console.log(
       '\x1b[36m===\x1b[0mEnviroment:',
-      `\x1b[31m${dotenv.NODE_ENV}\x1b[36m===\x1b[0m`,
+      `\x1b[31m${configEnv.NODE_ENV}\x1b[36m===\x1b[0m`,
     );
-    console.log(`App is running on port \x1b[31m${dotenv.PORT}\x1b[0m`);
+    console.log(`App is running on port \x1b[31m${configEnv.PORT}\x1b[0m`);
     if (connection.readyState === 1) {
       console.log('DB connection successful!');
     }

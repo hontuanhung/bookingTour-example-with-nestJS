@@ -1,23 +1,22 @@
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ForgotPasswordDto } from '../dto/auth_dto/forgot-password.dto';
 import { Response, Request } from 'express';
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Inject,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from '../dto/auth_dto/create-user.dto';
 import { Model } from 'mongoose';
-import { IUser } from '../users/model/user.interface';
-import { LoginDto } from './dto/login.dto';
-import configEnv from 'configEnv';
-import Email from 'src/ultils/email';
+
+import { LoginDto } from '../dto/auth_dto/login.dto';
+import { configEnv } from 'src/configs/config_env/config-env';
+import { Email } from 'src/ultils/email';
 import crypto from 'crypto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
+import { ResetPasswordDto } from '../dto/auth_dto/reset-password.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UpdateMeDto } from './dto/update-me.dto';
+import { IUser } from 'src/interface/user.interface';
 
 @Injectable()
 export class AuthService {
@@ -28,16 +27,16 @@ export class AuthService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const newUser = new this.userModel(createUserDto);
+    const newUser: IUser = new this.userModel(createUserDto);
     return await newUser.save();
   }
 
   async login(res: Response, loginDto: LoginDto) {
     const { email, password } = loginDto;
-    const user: any = await this.userModel
+
+    const user: IUser = await this.userModel
       .findOne({ email: email })
       .select('+password +userJWTs');
-
     if (!user || !(await user.correctPassword(password, user.password))) {
       throw new HttpException(
         'Incorrect email or password',
@@ -100,10 +99,9 @@ export class AuthService {
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
       await user.save({ validateBeforeSave: false });
-      console.log(err);
-      throw new HttpException(
+
+      throw new BadRequestException(
         'There was an error sending the email. Try again later!',
-        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -127,75 +125,11 @@ export class AuthService {
     }
 
     user.password = resetPasswordDto.password;
-    user.passwordConfirm = resetPasswordDto.passwordConfirm;
     user.emailToken = undefined;
     user.emailTokenExpires = undefined;
     user.passwordChangedAt = Date.now();
     await user.save();
 
-    return { status: 'success' };
-  }
-
-  async changePassword(payload: any, changePasswordDto: ChangePasswordDto) {
-    // 1) Check if POSTed current password is correct
-    const user: any = await this.userModel
-      .findById(payload.id)
-      .select('+password');
-    if (
-      !(await user.correctPassword(
-        changePasswordDto.currentPassword,
-        user.password,
-      ))
-    ) {
-      throw new HttpException(
-        'Your password is incorrect!',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-
-    // 2) If so, update password
-    user.password = changePasswordDto.password;
-    user.passwordChangedAt = Date.now();
-
-    await user.save();
-
-    return {
-      status: 'success',
-    };
-  }
-
-  async updateMe(payload: any, updateMeDto: UpdateMeDto) {
-    const user: any = await this.userModel.findByIdAndUpdate(
-      payload.id,
-      updateMeDto,
-      { new: true },
-    );
-    if (!user) {
-      throw new NotFoundException();
-    }
-
-    return { status: 'sucess', user };
-  }
-
-  async getMe(payload: any) {
-    const user: any = await this.userModel
-      .findById(payload.id)
-      .select('-_id -__v -paswordChangedAt');
-
-    if (!user) {
-      throw new HttpException(
-        'No user found with that ID',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    return { status: 'success', user };
-  }
-
-  async deactivateUser(payload: any) {
-    await this.userModel.findByIdAndUpdate(payload.id, {
-      active: false,
-    });
     return { status: 'success' };
   }
 }

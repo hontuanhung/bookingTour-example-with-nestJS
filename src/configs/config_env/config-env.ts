@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 
 // Parsing the evn file
-dotenv.config({ path: './.env' });
+dotenv.config({ path: './src/configs/config_env/.env' });
 
 // Interface to load env variables
 // Note these variables can possibly be undefined
@@ -43,7 +43,6 @@ interface Config {
 }
 
 // Loading process.env as ENV interjace
-
 const getConfig: ENV = {
   NODE_ENV: process.env.NODE_ENV,
   LOCAL_DATABASE: process.env.LOCAL_DATABASE,
@@ -83,4 +82,4 @@ const getSanitzedConfig = (config: ENV): Config => {
   return config as Config;
 };
 
-export default getSanitzedConfig(getConfig);
+export const configEnv = getSanitzedConfig(getConfig);

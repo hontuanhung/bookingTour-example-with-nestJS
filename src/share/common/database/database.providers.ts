@@ -1,4 +1,4 @@
-import configEnv from 'configEnv';
+import { configEnv } from 'src/configs/config_env/config-env';
 import * as mongoose from 'mongoose';
 
 export const databaseProviders = [

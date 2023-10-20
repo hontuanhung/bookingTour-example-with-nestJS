@@ -1,7 +1,7 @@
-import configEnv from 'configEnv';
+import { configEnv } from 'src/configs/config_env/config-env';
 import nodemailer, { Transporter } from 'nodemailer';
 
-export default class Email {
+export class Email {
   to: string | undefined;
   name: string | undefined;
   from: string | undefined;

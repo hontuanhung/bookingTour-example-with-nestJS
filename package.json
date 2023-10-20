@@ -34,6 +34,7 @@
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.3",
+    "morgan": "^1.10.0",
     "nodemailer": "^6.9.6",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
@@ -48,6 +49,7 @@
     "@types/express-session": "^1.17.9",
     "@types/jest": "^29.5.2",
     "@types/jsonwebtoken": "^9.0.4",
+    "@types/morgan": "^1.9.7",
     "@types/node": "^20.3.1",
     "@types/nodemailer": "^6.4.12",
     "@types/supertest": "^2.0.12",
