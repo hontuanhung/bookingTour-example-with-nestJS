@@ -1,28 +1,42 @@
-import * as mongoose from 'mongoose';
 import bcryptjs from 'bcryptjs';
 import crypto from 'crypto';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 import { IUser } from 'src/interface/user.interface';
 
-export const UserSchema = new mongoose.Schema<IUser>({
-  name: String,
-  email: String,
-  password: { type: String, select: false },
-  passwordConfirm: String,
-  photo: String,
-  role: {
-    type: String,
-    default: 'user',
-  },
-  userJWTs: { type: [String], select: false },
-  passwordChangedAt: Date,
-  emailToken: String,
-  emailTokenExpires: Date,
-  active: {
-    type: Boolean,
-    default: false,
-    select: false,
-  },
-});
+export type UserDocument = HydratedDocument<IUser>;
+
+@Schema({ id: false })
+export class User {
+  @Prop()
+  name!: string;
+
+  @Prop()
+  email!: string;
+
+  @Prop({ select: false })
+  password!: string;
+
+  @Prop()
+  photo!: string;
+
+  @Prop({ default: 'user' })
+  role!: string;
+
+  @Prop({ select: false })
+  userJWTs!: string[];
+
+  @Prop()
+  emailToken!: string;
+
+  @Prop()
+  emailTokenExpires!: Date;
+
+  @Prop({ default: true, select: false })
+  active!: boolean;
+}
+
+export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre('save', async function (): Promise<void> {
   if (!this.isModified('password')) {

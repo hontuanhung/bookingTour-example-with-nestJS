@@ -31,7 +31,10 @@ export class AuthController {
   async login(
     @Res({ passthrough: true }) res: Response,
     @Body() loginDto: LoginDto,
-  ) {
+  ): Promise<{
+    status: string;
+    user: IUser;
+  }> {
     return this.authService.login(res, loginDto);
   }
 
@@ -40,8 +43,7 @@ export class AuthController {
   async forgotPassword(
     @Req() req: Request,
     @Body() forgotPasswordDto: ForgotPasswordDto,
-  ) {
-    console.log(req);
+  ): Promise<{ status: string; message: string }> {
     return this.authService.forgotPassword(req, forgotPasswordDto);
   }
 
@@ -50,7 +52,7 @@ export class AuthController {
   async resetPassword(
     @Param('token') token: string,
     @Body() resetPassword: ResetPasswordDto,
-  ) {
+  ): Promise<{ status: string; user: IUser }> {
     return this.authService.resetPassword(token, resetPassword);
   }
 }

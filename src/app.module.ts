@@ -2,10 +2,17 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './api/users/users.module';
-import { DatabaseModule } from './share/common/database/database.module';
+// import { DatabaseModule } from './share/common/database/database.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { configEnv } from './configs/config_env/config-env';
+import { ToursModule } from './api/tours/tours.module';
 
 @Module({
-  imports: [UsersModule, DatabaseModule],
+  imports: [
+    UsersModule,
+    MongooseModule.forRoot(configEnv.LOCAL_DATABASE),
+    ToursModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

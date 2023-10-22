@@ -4,11 +4,10 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dto/auth_dto/create-user.dto';
-import { Model } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 
 import { LoginDto } from '../dto/auth_dto/login.dto';
 import { configEnv } from 'src/configs/config_env/config-env';
@@ -17,26 +16,37 @@ import crypto from 'crypto';
 import { ResetPasswordDto } from '../dto/auth_dto/reset-password.dto';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/interface/user.interface';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { User } from '../model/user.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject('USER_MODEL')
+    @InjectConnection()
+    private connection: Connection,
+
+    @InjectModel(User.name)
     private userModel: Model<IUser>,
+
     private jwtService: JwtService,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<IUser> {
     const newUser: IUser = new this.userModel(createUserDto);
     return await newUser.save();
   }
 
-  async login(res: Response, loginDto: LoginDto) {
+  async login(
+    res: Response,
+    loginDto: LoginDto,
+  ): Promise<{ status: string; user: IUser }> {
     const { email, password } = loginDto;
 
     const user: IUser = await this.userModel
       .findOne({ email: email })
       .select('+password +userJWTs');
+    const istrue = await user.correctPassword(password, user.password);
+    istrue;
     if (!user || !(await user.correctPassword(password, user.password))) {
       throw new HttpException(
         'Incorrect email or password',
@@ -45,7 +55,7 @@ export class AuthService {
     }
 
     const token: string = this.jwtService.sign({ id: user._id });
-    user.userJWTs.push(token);
+    user.userJWTs?.push(token);
     await user.save();
 
     type CookieOptions = {
@@ -64,12 +74,17 @@ export class AuthService {
 
     res.cookie('jwt', token, cookieOptions);
 
-    return { status: 'success' };
+    user.userJWTs = undefined!;
+    user.password = undefined!;
+    return { status: 'success', user };
   }
 
-  async forgotPassword(req: Request, forgotPasswordDto: ForgotPasswordDto) {
+  async forgotPassword(
+    req: Request,
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<{ status: string; message: string }> {
     // 1) Get user based on POSTed email
-    const user: any = await this.userModel.findOne({
+    const user: IUser | null = await this.userModel.findOne({
       email: forgotPasswordDto.email,
     });
     if (!user) {
@@ -95,7 +110,7 @@ export class AuthService {
         status: 'success',
         message: 'Token sent to email!',
       };
-    } catch (err) {
+    } catch {
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
       await user.save({ validateBeforeSave: false });
@@ -106,15 +121,29 @@ export class AuthService {
     }
   }
 
-  async resetPassword(token: string, resetPasswordDto: ResetPasswordDto) {
+  async resetPassword(
+    token: string,
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ status: string; user: IUser }> {
     const hashedToken: string = crypto
       .createHash('sha256')
       .update(token)
       .digest('hex');
-    const user: any = await this.userModel.findOne({
-      emailToken: hashedToken,
-      emailTokenExpires: { $gt: Date.now() },
-    });
+
+    const update: object = {
+      password: resetPasswordDto.password,
+      emailToken: undefined,
+      emailTokenExpires: undefined,
+      passwordChangedAt: new Date(),
+    };
+
+    const user: IUser | null = await this.userModel.findOneAndUpdate(
+      {
+        emailToken: hashedToken,
+        emailTokenExpires: { $gt: Date.now() },
+      },
+      update,
+    );
 
     // 2) If token has not expired, and there is an user, set the new password
     if (!user) {
@@ -124,12 +153,6 @@ export class AuthService {
       );
     }
 
-    user.password = resetPasswordDto.password;
-    user.emailToken = undefined;
-    user.emailTokenExpires = undefined;
-    user.passwordChangedAt = Date.now();
-    await user.save();
-
-    return { status: 'success' };
+    return { status: 'success', user };
   }
 }
