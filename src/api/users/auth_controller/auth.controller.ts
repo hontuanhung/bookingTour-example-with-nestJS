@@ -17,7 +17,7 @@ import { ResetPasswordDto } from '../dto/auth_dto/reset-password.dto';
 import { IUser } from 'src/interface/user.interface';
 
 // @ApiSecurity('basic')
-@Controller('/api/v1/users/auth')
+@Controller('/api/v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

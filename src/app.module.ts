@@ -1,20 +1,24 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UsersModule } from './api/users/users.module';
 // import { DatabaseModule } from './share/common/database/database.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { configEnv } from './configs/config_env/config-env';
 import { ToursModule } from './api/tours/tours.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from 'src/share/common/guard/guard/auth.guard';
+import { RolesGuard } from 'src/share/common/guard/guard/roles.guard';
 
 @Module({
   imports: [
     UsersModule,
-    MongooseModule.forRoot(configEnv.LOCAL_DATABASE),
     ToursModule,
+    MongooseModule.forRoot(configEnv.LOCAL_DATABASE),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [
+    { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+  ],
 })
 export class AppModule {} /* implements NestModule {
   configure(consumer: MiddlewareConsumer) {

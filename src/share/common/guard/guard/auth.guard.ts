@@ -7,15 +7,29 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
+import { jwtConstants } from '../../../consants/jwt.constant';
 import { Request } from 'express';
+import { Reflector } from '@nestjs/core';
+import { IS_PROTECT } from 'src/share/consants/protect.constant';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isProtect = this.reflector.getAllAndOverride<boolean>(IS_PROTECT, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (!isProtect) {
+      // 💡 See this condition
+      return true;
+    }
     const request = context.switchToHttp().getRequest();
+
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new HttpException(

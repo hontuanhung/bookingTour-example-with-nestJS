@@ -1,10 +1,6 @@
 import bcryptjs from 'bcryptjs';
 import crypto from 'crypto';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import { IUser } from 'src/interface/user.interface';
-
-export type UserDocument = HydratedDocument<IUser>;
 
 @Schema({ id: false })
 export class User {

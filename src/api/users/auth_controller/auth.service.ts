@@ -45,8 +45,6 @@ export class AuthService {
     const user: IUser = await this.userModel
       .findOne({ email: email })
       .select('+password +userJWTs');
-    const istrue = await user.correctPassword(password, user.password);
-    istrue;
     if (!user || !(await user.correctPassword(password, user.password))) {
       throw new HttpException(
         'Incorrect email or password',
@@ -54,7 +52,10 @@ export class AuthService {
       );
     }
 
-    const token: string = this.jwtService.sign({ id: user._id });
+    const token: string = this.jwtService.sign({
+      id: user._id,
+      role: user.role,
+    });
     user.userJWTs?.push(token);
     await user.save();
 

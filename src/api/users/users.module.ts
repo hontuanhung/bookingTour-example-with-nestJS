@@ -6,12 +6,10 @@ import { UsersController } from './user_controller/users.controller';
 // import { usersProviders } from './users.providers';
 import { AuthController } from './auth_controller/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from '../../share/common/guard/guard/constants';
+import { jwtConstants } from '../../share/consants/jwt.constant';
 import { configEnv } from 'src/configs/config_env/config-env';
 import { AuthService } from './auth_controller/auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from 'src/share/common/guard/guard/roles.guard';
 
 @Module({
   imports: [
@@ -23,11 +21,7 @@ import { RolesGuard } from 'src/share/common/guard/guard/roles.guard';
     }),
   ],
   controllers: [UsersController, AuthController],
-  providers: [
-    UsersService,
-    AuthService,
-    { provide: APP_GUARD, useClass: RolesGuard },
-  ],
+  providers: [UsersService, AuthService],
   // exports: [MongooseModule],
 })
 export class UsersModule {}

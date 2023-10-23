@@ -4,7 +4,6 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   Query,
   Body,
   HttpStatus,
@@ -12,16 +11,16 @@ import {
   Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthGuard } from '../../../share/common/guard/guard/auth.guard';
 import { ListAllEntities } from '../dto/user_dto/list-all-entities';
 import { UpdateUserDto } from '../dto/user_dto/update-user.dto';
 import { ChangePasswordDto } from '../dto/auth_dto/change-password.dto';
 import { UpdateMeDto } from '../dto/auth_dto/update-me.dto';
 import { IUser } from 'src/interface/user.interface';
 import { Roles } from 'src/share/decorator_custom/roles.decorator';
+import { Protect } from 'src/share/consants/protect.constant';
 
 @Controller('/api/v1/users')
-@UseGuards(AuthGuard)
+@Protect()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
