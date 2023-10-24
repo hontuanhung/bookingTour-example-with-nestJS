@@ -11,13 +11,14 @@ import {
   Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ListAllEntities } from '../dto/user_dto/list-all-entities';
+import { ListAllUserEntities } from '../dto/user_dto/list-all-entities.user';
 import { UpdateUserDto } from '../dto/user_dto/update-user.dto';
 import { ChangePasswordDto } from '../dto/auth_dto/change-password.dto';
 import { UpdateMeDto } from '../dto/auth_dto/update-me.dto';
 import { IUser } from 'src/interface/user.interface';
 import { Roles } from 'src/share/decorator_custom/roles.decorator';
 import { Protect } from 'src/share/consants/protect.constant';
+import { ResponsePattern } from 'src/ultils/response-type';
 
 @Controller('/api/v1/users')
 @Protect()
@@ -66,7 +67,9 @@ export class UsersController {
   @Get()
   @Roles('admin')
   @HttpCode(200)
-  async findAll(@Query() query: ListAllEntities): Promise<IUser[]> {
+  async findAll(
+    @Query() query: ListAllUserEntities,
+  ): Promise<ResponsePattern<IUser>> {
     return this.usersService.findAll(query);
     // return query;
   }

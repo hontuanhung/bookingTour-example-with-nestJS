@@ -9,12 +9,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Location } from '../model/tour.schema';
-enum DIFFICULTY {
-  EASY = 'easy',
-  MEDIUM = 'medium',
-  DIFFICULT = 'difficult',
-}
+import { DIFFICULTY, Location } from 'src/interface/tour.interface';
 
 export class CreateTourDto {
   @IsNotEmpty()
@@ -27,11 +22,11 @@ export class CreateTourDto {
   })
   name!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
-  duration!: number;
+  duration!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
   maxGroupSize!: number;
 
@@ -39,7 +34,7 @@ export class CreateTourDto {
   @IsEnum(DIFFICULTY)
   difficulty!: DIFFICULTY;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
   price!: number;
 
@@ -51,7 +46,7 @@ export class CreateTourDto {
   @IsString()
   summary!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   description!: string;
 

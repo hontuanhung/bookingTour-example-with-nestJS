@@ -5,12 +5,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { ListAllEntities } from '../dto/user_dto/list-all-entities';
 import { UpdateMeDto } from '../dto/auth_dto/update-me.dto';
 import { IUser } from 'src/interface/user.interface';
 import { ChangePasswordDto } from '../dto/auth_dto/change-password.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../model/user.schema';
+import { ListAllUserEntities } from '../dto/user_dto/list-all-entities.user';
+import { ResponsePattern } from 'src/ultils/response-type';
 
 @Injectable()
 export class UsersService {
@@ -19,10 +20,10 @@ export class UsersService {
     private userModel: Model<IUser>,
   ) {}
 
-  async findAll(query?: ListAllEntities): Promise<IUser[]> {
+  async findAll(query?: ListAllUserEntities): Promise<ResponsePattern<IUser>> {
     console.log(query);
-    const users: IUser[] = await this.userModel.find();
-    return users;
+    const docs: IUser[] = await this.userModel.find();
+    return { status: 'success', results: docs.length, docs };
   }
 
   async findOne(id: string): Promise<{ status: string; user: IUser }> {

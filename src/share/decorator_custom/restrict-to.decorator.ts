@@ -1,7 +1,7 @@
 import { SetMetadata, UseGuards, applyDecorators } from '@nestjs/common';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { AuthGuard } from 'src/share/common/guard/guard/auth.guard';
-import { RolesGuard } from 'src/share/common/guard/guard/roles.guard';
+import { AuthGuard } from 'src/share/common/guard/auth.guard';
+import { RolesGuard } from 'src/share/common/guard/roles.guard';
 
 type Role = 'admin' | 'user' | 'guide' | 'lead-guide';
 

@@ -112,8 +112,8 @@ export class AuthService {
         message: 'Token sent to email!',
       };
     } catch {
-      user.passwordResetToken = undefined;
-      user.passwordResetExpires = undefined;
+      user.emailToken = undefined;
+      user.emailTokenExpires = undefined;
       await user.save({ validateBeforeSave: false });
 
       throw new BadRequestException(

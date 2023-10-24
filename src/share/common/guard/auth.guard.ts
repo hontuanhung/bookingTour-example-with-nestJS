@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from '../../../consants/jwt.constant';
+import { jwtConstants } from '../../consants/jwt.constant';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { IS_PROTECT } from 'src/share/consants/protect.constant';

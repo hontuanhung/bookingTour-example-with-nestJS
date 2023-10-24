@@ -1,23 +1,35 @@
-import { IUser } from './user.interface';
+import { Document } from 'mongoose';
 
-export interface ITour {
-  start: number;
+export enum DIFFICULTY {
+  EASY = 'easy',
+  MEDIUM = 'medium',
+  DIFFICULT = 'difficult',
+}
+
+export type Location = {
+  type: object;
+  coordinates: number[];
+  address: string;
+  description: string;
+};
+
+export interface ITour extends Document {
   name: string;
-  slug: string;
   duration: number;
-  maxGroupSize: number;
-  difficulty: string;
+  maxGroupSize: 15;
+  difficulty: DIFFICULTY;
+  slug: string;
   ratingsAverage: number;
   ratingsQuantity: number;
   price: number;
-  priceDiscount: number;
+  priceDiscounty: number;
   summary: string;
+  descriptiong: string;
   imageCover: string;
-  images: string;
+  images: string[];
   createdAt: Date;
-  startDates: Date;
-  secretTour: boolean;
+  startDates: Date[];
   startLocation: Location;
-  location: Location[];
-  guides: IUser[];
+  lacations: Location[];
+  guide: string;
 }

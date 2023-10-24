@@ -14,8 +14,6 @@ export interface IUser extends Document {
   emailToken: string | undefined;
   emailTokenExpires: number | undefined;
   inactiveAccount: boolean | undefined;
-  passwordResetToken: string | undefined;
-  passwordResetExpires: string | undefined;
   active: boolean;
   correctPassword(
     candidatePassword: string | undefined,

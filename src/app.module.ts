@@ -5,14 +5,16 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { configEnv } from './configs/config_env/config-env';
 import { ToursModule } from './api/tours/tours.module';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from 'src/share/common/guard/guard/auth.guard';
-import { RolesGuard } from 'src/share/common/guard/guard/roles.guard';
+import { AuthGuard } from 'src/share/common/guard/auth.guard';
+import { RolesGuard } from 'src/share/common/guard/roles.guard';
+import { ReviewModule } from './api/review/review.module';
 
 @Module({
   imports: [
     UsersModule,
     ToursModule,
     MongooseModule.forRoot(configEnv.LOCAL_DATABASE),
+    ReviewModule,
   ],
   controllers: [],
   providers: [
