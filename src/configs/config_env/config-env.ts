@@ -16,6 +16,14 @@ interface ENV {
   JWT_EXPIRES_IN: string | number | undefined;
   JWT_COOKIE_EXPIRES_IN: number | undefined;
 
+  TWITTER_BEARER_TOKEN: string | undefined;
+  TWITTER_CONSUMER_KEY: string | undefined;
+  TWITTER_CONSUMER_SECRET: string | undefined;
+  TWITTER_ACCESS_TOKEN: string | undefined;
+  TWITTER_TOKEN_SECRET: string | undefined;
+  TWITTER_CLIENT_ID: string | undefined;
+  TWITTER_CLIENT_SECRET: string | undefined;
+
   EMAIL_USERNAME: string | undefined;
   EMAIL_PASSWORD: string | undefined;
   EMAIL_HOST: string | undefined;
@@ -32,6 +40,14 @@ interface Config {
   JWT_SECRET: string;
   JWT_EXPIRES_IN: string | number;
   JWT_COOKIE_EXPIRES_IN: number;
+
+  TWITTER_BEARER_TOKEN: string;
+  TWITTER_CONSUMER_KEY: string;
+  TWITTER_CONSUMER_SECRET: string;
+  TWITTER_ACCESS_TOKEN: string;
+  TWITTER_TOKEN_SECRET: string;
+  TWITTER_CLIENT_ID: string;
+  TWITTER_CLIENT_SECRET: string;
 
   EMAIL_USERNAME: string;
   EMAIL_PASSWORD: string;
@@ -55,6 +71,14 @@ const getConfig: ENV = {
   JWT_COOKIE_EXPIRES_IN: process.env.JWT_EXPIRES_IN
     ? Number(process.env.JWT_COOKIE_EXPIRES_IN)
     : undefined,
+
+  TWITTER_BEARER_TOKEN: process.env.TWITTER_BEARER_TOKEN,
+  TWITTER_CONSUMER_KEY: process.env.TWITTER_CONSUMER_KEY,
+  TWITTER_CONSUMER_SECRET: process.env.TWITTER_CONSUMER_SECRET,
+  TWITTER_ACCESS_TOKEN: process.env.TWITTER_ACCESS_TOKEN,
+  TWITTER_TOKEN_SECRET: process.env.TWITTER_TOKEN_SECRET,
+  TWITTER_CLIENT_ID: process.env.TWITTER_CLIENT_ID,
+  TWITTER_CLIENT_SECRET: process.env.TWITTER_CLIENT_SECRET,
 
   EMAIL_USERNAME: process.env.EMAIL_USERNAME,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,

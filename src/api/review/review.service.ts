@@ -8,6 +8,7 @@ import { Review, ReviewDocument } from './model/review.schema';
 import APIFeatures from 'src/ultils/apiFeatures';
 import { ListAllEntities } from 'src/ultils/list-all-entities';
 import { ResponsePattern } from 'src/ultils/response-type';
+import { calcAverageRatings } from 'src/ultils/calcAverageRatings';
 
 @Injectable()
 export class ReviewService {
@@ -27,6 +28,8 @@ export class ReviewService {
       createdAt: new Date(),
     });
     const doc: ReviewDocument = await this.reviewModel.create(createReviewDto);
+
+    calcAverageRatings(tourId, this.reviewModel, this.tourModel);
     return { status: 'success', doc };
   }
 
@@ -63,7 +66,7 @@ export class ReviewService {
     id: string,
     updateReviewDto: UpdateReviewDto,
   ): Promise<ResponsePattern<ReviewDocument>> {
-    const doc: ReviewDocument | any = await this.reviewModel.findByIdAndUpdate(
+    const doc: ReviewDocument | null = await this.reviewModel.findByIdAndUpdate(
       id,
       updateReviewDto,
       { new: true },
@@ -71,7 +74,8 @@ export class ReviewService {
     if (!doc) {
       throw new NotFoundException();
     }
-    doc.calcAverageRatings(doc.tour, this.tourModel);
+    const tourId = doc.tour as unknown as string;
+    calcAverageRatings(tourId, this.reviewModel, this.tourModel);
     return { status: 'success', doc };
   }
 

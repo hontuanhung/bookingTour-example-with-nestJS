@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from 'src/share/common/guard/auth.guard';
 import { RolesGuard } from 'src/share/common/guard/roles.guard';
 import { ReviewModule } from './api/review/review.module';
+import { TwitterModule } from './api/twitter/twitter.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ReviewModule } from './api/review/review.module';
     ToursModule,
     MongooseModule.forRoot(configEnv.LOCAL_DATABASE),
     ReviewModule,
+    TwitterModule,
   ],
   controllers: [],
   providers: [
